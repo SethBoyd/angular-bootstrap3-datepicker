@@ -9,8 +9,13 @@ dp.directive('ngBs3Datepicker', function($compile) {
     replace: true,
     template: "<div class='input-group date'>\n  <input type='text' class='form-control'/>\n  <span class='input-group-addon'>\n    <span class='fa fa-calendar'></span>\n  </span>\n</div>",
     link: function($scope, element, attr) {
-      var attributes, dateFormat, input, resetValue;
-      dateFormat = "";
+      if (!$scope.datePickerOptions) {
+        $scope.datePickerOptions = {};
+      }
+      $scope.datePickerOptions.pickTime = false;
+      $scope.datePickerOptions.dateFormat = "";
+      
+      var attributes, input, resetValue;
       attributes = element.prop("attributes");
       input = element.find("input");
       resetValue = false;
@@ -19,23 +24,12 @@ dp.directive('ngBs3Datepicker', function($compile) {
           input.attr(e.name, e.value);
         }
         if (e.name === "date-format") {
-          return dateFormat = e.value;
+          return $scope.datePickerOptions.dateFormat = e.value;
         }
       });
       $scope.$watch(attr.language, function(value) {
-        var language;
-        language = value ? value : input.attr('language');
-        return input.datetimepicker({
-          language: language,
-          pickTime: false,
-          format: dateFormat,
-          icons: {
-            time: 'fa fa-clock-o',
-            date: 'fa fa-calendar',
-            up: 'fa fa-arrow-up',
-            down: 'fa fa-arrow-down'
-          }
-        });
+        $scope.datePickerOptions.language = value ? value : input.attr('language');
+        return input.datetimepicker($scope.datePickerOptions);
       });
       element.find('.input-group-addon').on('click', function(e) {
         return element.find('input').focus();
@@ -57,7 +51,7 @@ dp.directive('ngBs3Datepicker', function($compile) {
                   resetValue = false;
                   _results.push(obj[path] = null);
                 } else {
-                  _results.push(obj[path] = e.date.format(dateFormat));
+                  _results.push(obj[path] = e.date.format($scope.datePickerOptions.dateFormat));
                 }
               } else {
                 _results.push(obj = obj[path]);
