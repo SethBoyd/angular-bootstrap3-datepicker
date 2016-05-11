@@ -27,10 +27,10 @@ dp.directive('ngBs3Datepicker', function($compile) {
           return $scope.datePickerOptions.dateFormat = e.value;
         }
       });
-      $scope.$watch(attr.language, function(value) {
-        $scope.datePickerOptions.language = value ? value : input.attr('language');
+      $scope.$watch(attr.datePickerOptions.enabledDates, function(value) {
+        $scope.datePickerOptions.enabledDates = value ? value : input.attr('language');
         return input.datetimepicker($scope.datePickerOptions);
-      });
+      }, true);
       element.find('.input-group-addon').on('click', function(e) {
         return element.find('input').focus();
       });
