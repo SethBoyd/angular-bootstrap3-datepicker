@@ -38,8 +38,25 @@ dp.directive('ngBs3Datepicker', function($compile, $timeout) {
         }
       };
 
+      var setRequired = function() {
+        var dtp = input.data('DateTimePicker');
+        if (scope.dateRequired) {
+          if (ctrl.$isEmpty(scope.bindModel)) {
+              scope.inputRequired = true;
+          } else {
+            var enabledDates = dtp.enabledDates();
+            if (enabledDates) {
+              scope.inputRequired = !enabledDates[scope.bindModel.format('YYYY-MM-DD')];
+            } else {
+              scope.inputRequired = false;
+            }
+          }
+        }
+      };
+
       scope.$watchCollection('datePickerOptions.enabledDates', function(value) {
-        return scope.reset()
+        scope.reset();
+        setRequired();
       });
       element.find('.input-group-addon').on('click', function(e) {
         return element.find('input').focus();
@@ -56,18 +73,7 @@ dp.directive('ngBs3Datepicker', function($compile, $timeout) {
             $timeout(function() {
               var dtp = input.data('DateTimePicker');
               scope.bindModel = dtp.date();
-              if (scope.dateRequired) {
-                if (ctrl.$isEmpty(scope.bindModel)) {
-                   scope.inputRequired = true;
-                } else {
-                  var enabledDates = dtp.enabledDates();
-                  if (enabledDates) {
-                    scope.inputRequired = !enabledDates[scope.bindModel.format('YYYY-MM-DD')];
-                  } else {
-                   scope.inputRequired = false;
-                  }
-                }
-              }
+              setRequired();
             });
           });
       });
