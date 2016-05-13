@@ -13,11 +13,13 @@ dp.directive('ngBs3Datepicker', function($compile, $timeout) {
       datePickerOptions: '=',
       dateFormat: '=',
       dateRequired: '=',
-      bindModel:'=ngModel'
+      bindModel:'=ngModel',
+      strictEnabledDates:'='
     },
     link: function(scope, element, attr, ctrl) {
       scope.inputModel = "";
       scope.inputRequired = scope.dateRequired ? true : false;
+      scope.strictEnabledDates = scope.strictEnabledDates === undefined ? true : scope.strictEnabledDates;
 
       var attributes, input, resetValue, initialized;
       attributes = element.prop("attributes");
@@ -44,9 +46,13 @@ dp.directive('ngBs3Datepicker', function($compile, $timeout) {
           if (ctrl.$isEmpty(scope.bindModel)) {
               scope.inputRequired = true;
           } else {
+            if (dtp === undefined) {
+              scope.inputRequired = false;
+              return
+            }
             var enabledDates = dtp.enabledDates();
-            if (enabledDates) {
-              scope.inputRequired = !enabledDates[scope.bindModel.format('YYYY-MM-DD')];
+            if (enabledDates && scope.strictEnabledDates) {
+              scope.inputRequired = !enabledDates[dtp.date().format('YYYY-MM-DD')];
             } else {
               scope.inputRequired = false;
             }
@@ -72,7 +78,11 @@ dp.directive('ngBs3Datepicker', function($compile, $timeout) {
           .on("dp.change", function(e) {
             $timeout(function() {
               var dtp = input.data('DateTimePicker');
-              scope.bindModel = dtp.date();
+              if (dtp.date()) {
+                scope.bindModel = dtp.date().format(scope.datePickerOptions.format);
+              } else {
+                scope.bindModel = ""
+              }
               setRequired();
             });
           });
