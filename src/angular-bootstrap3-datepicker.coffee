@@ -62,6 +62,9 @@ dp.directive 'ngBs3Datepicker', ($compile)->
                 obj[path] = e.date.format(dateFormat)
             else
               obj = obj[path]
+              
+    $scope.$watch 'bindModel', (newValue, oldValue)->
+      if(oldValue != newValue) then $scope.inputModel = newValue
 
     $scope.$watch attr.ngModel, (newValue, oldValue)->
       if(oldValue and !newValue) then resetValue = true
