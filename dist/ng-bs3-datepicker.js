@@ -70,6 +70,16 @@ dp.directive('ngBs3Datepicker', function($compile, $timeout) {
       scope.$watch('bindModel', function(newValue, oldValue) {
         if (oldValue != newValue) {
           scope.inputModel = newValue;
+          if (newValue) {
+            var formattedDate = moment(new Date(newValue)).format(scope.datePickerOptions.format);
+            if (formattedDate !== "Invalid date") {
+              scope.inputModel = formattedDate;
+            }
+          }
+          if (scope.datePickerOptions.viewMode) {
+            var dtp = input.data('DateTimePicker');
+            dtp.viewMode(scope.datePickerOptions.viewMode);
+          }
         }
       });
       scope.$watch(attr.ngModel, function(newValue, oldValue) {
